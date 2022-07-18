@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { ShopLayout } from "../components/layouts";
+import { NotFoundComponent } from "../components/ui";
 
 const Custom404 = () => {
   return (
@@ -7,23 +8,7 @@ const Custom404 = () => {
       title='Page not found'
       pageDescription='No hay nada que mostrar aquí'
     >
-      <Box
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        height='calc(100vh - 200px)'
-        sx={{
-          flexDirection: {
-            xs: "column",
-            sm: "row",
-          },
-        }}
-      >
-        <Typography variant='h1' component='h1' fontSize={80} fontWeight={200}>
-          404 |
-        </Typography>
-        <Typography marginLeft={2}>Esta página no existe</Typography>
-      </Box>
+      <NotFoundComponent />
     </ShopLayout>
   );
 };

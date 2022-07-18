@@ -22,6 +22,10 @@ export const ShopLayout: FC<Props> = ({
         <meta name='description' content={pageDescription} />
         <meta name='og:title' content={title} />
         <meta name='og:description' content={pageDescription} />
+        <link
+          rel='stylesheet'
+          href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'
+        />
         {imageFullurl && <meta name='og:image' content={imageFullurl} />}
       </Head>
       <nav>

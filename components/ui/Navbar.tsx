@@ -11,17 +11,13 @@ import {
 } from "@mui/material";
 import { SearchOutlined, ShoppingCartOutlined } from "@mui/icons-material";
 import { NAVBAR_ITEMS } from "../../constants";
+import { Logo } from "./Logo";
 
 export const Navbar = () => {
   return (
     <AppBar>
       <Toolbar>
-        <NextLink href='/' passHref>
-          <Link display='flex' alignItems='center'>
-            <Typography variant='h6'>Teslo |</Typography>
-            <Typography sx={{ ml: 0.5 }}>Shop</Typography>
-          </Link>
-        </NextLink>
+        <Logo />
         <Box flex={1} />
         <Box
           sx={{
