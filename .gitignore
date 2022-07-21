@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# MongoDB
+mongo/
+
 # next.js
 /.next/
 /out/
