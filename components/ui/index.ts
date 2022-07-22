@@ -3,3 +3,4 @@ export * from "./SideMenu";
 export * from "./ItemCounter";
 export * from "./NotFoundComponent";
 export * from "./Logo";
+export * from "./FullScreenLoading";
