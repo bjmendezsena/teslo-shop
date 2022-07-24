@@ -1,13 +1,31 @@
+import {
+  GetStaticProps,
+  NextPage,
+  GetServerSideProps,
+  GetStaticPaths,
+} from "next";
 import { Box, Button, Grid, Typography, Chip } from "@mui/material";
+import { useRouter } from "next/router";
 import React from "react";
 import { ShopLayout } from "../../components/layouts/ShopLayout";
 import { ProductSlideshow, SizeSelector } from "../../components/products";
 import { ItemCounter } from "../../components/ui";
-import { initialData } from "../../database/products";
+import { IProduct } from "../../interfaces";
+import {
+  getProductBySlug,
+  getAllProductsSlugs,
+} from "../../database/dbProducts";
 
-const product = initialData.products[0];
+interface Props {
+  product: IProduct;
+}
 
-const SlugPage = () => {
+const SlugPage: NextPage<Props> = ({ product }) => {
+  // const router = useRouter();
+  // const { products: product, isLoading } = useProducts(
+  //   `/products/${router.query.slug}`
+  // );
+
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
       <Grid container spacing={3}>
@@ -43,6 +61,39 @@ const SlugPage = () => {
       </Grid>
     </ShopLayout>
   );
+};
+
+export const getStaticPaths: GetStaticPaths = async (ctx) => {
+  const slugs = await getAllProductsSlugs();
+
+  const paths = slugs.map(({ slug }) => ({
+    params: { slug },
+  }));
+
+  return {
+    paths,
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { slug = "" } = params as { slug: string };
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      product,
+    },
+    revalidate: 60 * 60 * 24,
+  };
 };
 
 export default SlugPage;
