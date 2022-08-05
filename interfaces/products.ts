@@ -9,9 +9,9 @@ export interface IProduct {
   tags: string[];
   title: string;
   type: IType;
-  gender: "men" | "women" | "kid" | "unisex";
+  gender: IGender;
   //TODO: Agregar createdAt y updatedAt
 }
-
+export type IGender = "men" | "women" | "kid" | "unisex";
 export type ISize = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL";
 export type IType = "shirts" | "pants" | "hoodies" | "hats";

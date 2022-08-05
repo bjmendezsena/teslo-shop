@@ -11,17 +11,14 @@ import { initialData } from "../../database/products";
 import NextLink from "next/link";
 import { ItemCounter } from "../ui";
 import { FC } from "react";
-const productsInCart = [
-  initialData.products[0],
-  initialData.products[1],
-  initialData.products[2],
-];
+import { ICartProduct } from "../../interfaces/cart";
 
 interface Props {
   editable?: boolean;
+  productsInCart: ICartProduct[];
 }
 
-export const CartList: FC<Props> = ({ editable = false }) => {
+export const CartList: FC<Props> = ({ editable = false, productsInCart }) => {
   return (
     <>
       {productsInCart.map((product) => (
@@ -32,7 +29,7 @@ export const CartList: FC<Props> = ({ editable = false }) => {
               <Link>
                 <CardActionArea>
                   <CardMedia
-                    image={`/products/${product.images[0]}`}
+                    image={`/products/${product.image}`}
                     component='img'
                   />
                 </CardActionArea>
@@ -43,10 +40,20 @@ export const CartList: FC<Props> = ({ editable = false }) => {
             <Box display='flex' flexDirection='column'>
               <Typography variant='body1'>{product.title}</Typography>
               <Typography variant='body1'>
-                Talla: <strong>M</strong>
+                Talla: <strong>{product.size}</strong>
               </Typography>
               {/* Condicional */}
-              {editable ? <ItemCounter /> : <Typography variant="h6" >3 Productos</Typography>}
+              {editable ? (
+                <ItemCounter
+                  currentValue={product.quantity}
+                  maxValue={10}
+                  onUpdateQuantity={(quantity) => {
+                    console.log(quantity);
+                  }}
+                />
+              ) : (
+                <Typography variant='h6'>{product.quantity} Productos</Typography>
+              )}
             </Box>
           </Grid>
           <Grid

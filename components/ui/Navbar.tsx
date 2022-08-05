@@ -19,9 +19,10 @@ import {
 import { NAVBAR_ITEMS } from "../../constants";
 import { Logo } from "./Logo";
 import { useRouter } from "next/router";
-import { UiContext } from "../../context";
+import { UiContext, CartContext } from "../../context";
 
 export const Navbar = () => {
+  const { cart } = useContext(CartContext);
   const { pathname, push } = useRouter();
   const { toggleSideMenu } = useContext(UiContext);
   const [shearchTerm, setShearchTerm] = useState("");
@@ -132,7 +133,7 @@ export const Navbar = () => {
         <NextLink href='/cart' passHref>
           <Link>
             <IconButton>
-              <Badge badgeContent={2} color='secondary'>
+              <Badge badgeContent={cart.length} color='secondary'>
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
