@@ -17,6 +17,7 @@ import {
   getAllProductsSlugs,
 } from "../../database/dbProducts";
 import { CartContext } from "../../context";
+import { formatCurrency } from "../../utils";
 
 interface Props {
   product: IProduct;
@@ -74,7 +75,7 @@ const SlugPage: NextPage<Props> = ({ product }) => {
         <Grid item xs={12} sm={5}>
           <Box display='flex' flexDirection='column'>
             <Typography variant='subtitle1' component='h2'>
-              {`$${product.price}`}
+              {formatCurrency(product.price)}
             </Typography>
             <Box sx={{ my: 2 }} flexDirection='column'>
               <Typography variant='subtitle2' component='h2'>

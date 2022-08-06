@@ -1,3 +1,5 @@
+import { FC, useContext, useEffect } from "react";
+import NextLink from "next/link";
 import {
   Box,
   Button,
@@ -7,25 +9,48 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import { initialData } from "../../database/products";
-import NextLink from "next/link";
+
 import { ItemCounter } from "../ui";
-import { FC } from "react";
-import { ICartProduct } from "../../interfaces/cart";
+import { CartContext } from "../../context";
+import { useRouter } from "next/router";
+import { ICartProduct } from "../../interfaces";
+import { formatCurrency } from "../../utils";
 
 interface Props {
   editable?: boolean;
-  productsInCart: ICartProduct[];
 }
 
-export const CartList: FC<Props> = ({ editable = false, productsInCart }) => {
+export const CartList: FC<Props> = ({ editable = false }) => {
+  const router = useRouter();
+  const {
+    cart,
+    updateCartQuantity,
+    removeCartProduct: removeProductFromCart,
+  } = useContext(CartContext);
+
+  const onNewCartQuantityValue = (
+    product: ICartProduct,
+    newQuantityValue: number
+  ) => {
+    const newProduct: ICartProduct = {
+      ...product,
+      quantity: newQuantityValue,
+    };
+    updateCartQuantity(newProduct);
+  };
+
   return (
     <>
-      {productsInCart.map((product) => (
-        <Grid key={product.slug} spacing={2} sx={{ mb: 1 }} container>
+      {cart.map((product) => (
+        <Grid
+          key={product.slug + product.size}
+          spacing={2}
+          sx={{ mb: 1 }}
+          container
+        >
           <Grid item xs={3}>
             {/* TODO: Llevar a la página del producto */}
-            <NextLink href='/product/slug'>
+            <NextLink href={`/product/${product.slug}`}>
               <Link>
                 <CardActionArea>
                   <CardMedia
@@ -47,12 +72,15 @@ export const CartList: FC<Props> = ({ editable = false, productsInCart }) => {
                 <ItemCounter
                   currentValue={product.quantity}
                   maxValue={10}
-                  onUpdateQuantity={(quantity) => {
-                    console.log(quantity);
-                  }}
+                  onUpdateQuantity={(quantity) =>
+                    onNewCartQuantityValue(product, quantity)
+                  }
                 />
               ) : (
-                <Typography variant='h6'>{product.quantity} Productos</Typography>
+                <Typography variant='h6'>
+                  {product.quantity}{" "}
+                  {product.quantity > 1 ? "productos" : "producto"}
+                </Typography>
               )}
             </Box>
           </Grid>
@@ -63,10 +91,16 @@ export const CartList: FC<Props> = ({ editable = false, productsInCart }) => {
             alignItems='center'
             flexDirection='column'
           >
-            <Typography variant='subtitle1'>{`$${product.price}`}</Typography>
+            <Typography variant='subtitle1'>
+              {formatCurrency(product.price)}
+            </Typography>
             {/* Editable */}
             {editable && (
-              <Button variant='text' color='error'>
+              <Button
+                onClick={() => removeProductFromCart(product)}
+                variant='text'
+                color='error'
+              >
                 <Typography variant='body2'>Eliminar</Typography>
               </Button>
             )}

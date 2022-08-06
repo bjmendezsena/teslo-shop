@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import { UiContext, CartContext } from "../../context";
 
 export const Navbar = () => {
-  const { cart } = useContext(CartContext);
+  const { cart, numberOfItems } = useContext(CartContext);
   const { pathname, push } = useRouter();
   const { toggleSideMenu } = useContext(UiContext);
   const [shearchTerm, setShearchTerm] = useState("");
@@ -133,7 +133,10 @@ export const Navbar = () => {
         <NextLink href='/cart' passHref>
           <Link>
             <IconButton>
-              <Badge badgeContent={cart.length} color='secondary'>
+              <Badge
+                badgeContent={numberOfItems > 9 ? "+9" : numberOfItems}
+                color='secondary'
+              >
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
