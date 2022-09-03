@@ -1,11 +1,25 @@
 import NextLink from "next/link";
-import { Box, Button, Grid, TextField, Typography, Link } from "@mui/material";
+import { Button, Grid, TextField, Typography, Link } from "@mui/material";
 import { AuthLayout } from "../../components/layouts";
+import { TSForm, TSTextField } from "../../components/ui";
+
+interface FormData {
+  email: string;
+  password: string;
+  password2: string;
+  completeName: string;
+}
 
 const RegisterPage = () => {
+  const onSubmit = async (data: FormData) => {
+    console.log(data);
+  };
   return (
     <AuthLayout title='Registro'>
-      <Box
+      <TSForm<FormData>
+        form={{ mode: "onChange" }}
+        onSubmit={onSubmit}
+        noValidate
         display='flex'
         sx={{
           width: 350,
@@ -27,33 +41,59 @@ const RegisterPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <TextField label='Nombre completo' variant='filled' fullWidth />
+            <TSTextField
+              name='completeName'
+              label='Nombre completo'
+              variant='filled'
+              fullWidth
+              options={{
+                required: "Debes ingresar un nombre completo",
+                minLength: {
+                  value: 3,
+                  message: "La contraseña debe tener al menos 6 caracteres",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField label='Correo' variant='filled' fullWidth />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <TSTextField
               label='Contraseña'
               type='password'
+              name='password'
               variant='filled'
               fullWidth
+              options={{
+                required: "Este campo es requerido",
+                minLength: {
+                  value: 6,
+                  message: "La contraseña debe tener al menos 6 caracteres",
+                },
+              }}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <TSTextField
               label='repetir contraseña'
               type='password'
+              name='password2'
               variant='filled'
               fullWidth
+              options={{
+                required: "Este campo es requerido",
+              }}
             />
           </Grid>
+
           <Grid item xs={12}>
             <Button
               color='primary'
               fullWidth
               className='circular-btn'
               size='large'
+              type='submit'
             >
               Registrarse
             </Button>
@@ -64,7 +104,7 @@ const RegisterPage = () => {
             </NextLink>
           </Grid>
         </Grid>
-      </Box>
+      </TSForm>
     </AuthLayout>
   );
 };

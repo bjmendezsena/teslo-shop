@@ -5,4 +5,4 @@ export *  from "./constants";
 
 
 
-export * as seedDatabase from "./products";
+export * as seedDatabase from "./seed-data";

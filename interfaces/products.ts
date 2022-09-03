@@ -1,4 +1,6 @@
-export interface IProduct {
+import { IBaseInterface } from "./BaseInterface";
+
+export interface IProduct extends IBaseInterface {
   _id: string;
   description: string;
   images: string[];
@@ -10,7 +12,6 @@ export interface IProduct {
   title: string;
   type: IType;
   gender: IGender;
-  //TODO: Agregar createdAt y updatedAt
 }
 export type IGender = "men" | "women" | "kid" | "unisex";
 export type ISize = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL";
