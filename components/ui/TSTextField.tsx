@@ -8,15 +8,15 @@ export type TSTextFieldProps = TextFieldProps & {
 
 export const TSTextField = ({ options, name, ...rest }: TSTextFieldProps) => {
   const methods = useFormContext();
-  const fieldState = methods.getFieldState(name);
-  const error = fieldState.error?.message;
+  const { errors } = methods.formState;
+  const error = errors[name]?.message as string;
   console.log(error);
-  
+
   return (
     <TextField
       {...methods.register(name, options)}
-      error={!!fieldState.error}
-      helperText={fieldState.error?.message}
+      error={!!errors[name]}
+      helperText={error}
       {...rest}
     />
   );
