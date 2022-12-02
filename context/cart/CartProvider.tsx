@@ -1,24 +1,33 @@
 import { useReducer, PropsWithChildren, useEffect } from "react";
 import Cookie from "js-cookie";
-import { ICartProduct } from "../../interfaces";
+import { ICartProduct, ShippingAddress } from "../../interfaces";
 import { CartContext, cartReducer } from "./";
-import { summQuantityOfProductInCart } from "../../helpers";
+import {
+  summQuantityOfProductInCart,
+  getAddressFromCookies,
+  saveAddressToCookies,
+} from "../../helpers";
 
 const CART_COOKIE_KEY = "cart";
+
 export interface CartState {
+  isLoaded: boolean;
   cart: ICartProduct[];
   numberOfItems: number;
   subTotal: number;
   tax: number;
   total: number;
+  shippingAddress?: ShippingAddress;
 }
 
 const CART_INITIAL_STATE: CartState = {
+  isLoaded: false,
   cart: [],
   numberOfItems: 0,
   subTotal: 0,
   tax: 0,
   total: 0,
+  shippingAddress: undefined,
 };
 
 export const CartProvider = ({ children }: PropsWithChildren) => {
@@ -29,12 +38,10 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
       const cookieProducts = Cookie.get(CART_COOKIE_KEY);
       const cart = cookieProducts ? JSON.parse(cookieProducts) : [];
 
-      if (cart.length > 0) {
-        dispatch({
-          type: "[Cart]- LoadCart from kookies | storage",
-          payload: cart,
-        });
-      }
+      dispatch({
+        type: "[Cart]- LoadCart from kookies | storage",
+        payload: cart,
+      });
     } catch (error) {
       dispatch({
         type: "[Cart]- LoadCart from kookies | storage",
@@ -46,6 +53,29 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     Cookie.set(CART_COOKIE_KEY, JSON.stringify(state.cart));
   }, [state.cart]);
+
+  useEffect(() => {
+    fetchAddressFromCookies();
+  }, []);
+
+  const fetchAddressFromCookies = () => {
+    const shippingAddress = getAddressFromCookies();
+
+    if (!shippingAddress) return;
+
+    dispatch({
+      type: "[Cart]- Load address from cookies",
+      payload: shippingAddress,
+    });
+  };
+
+  const updateAddress = (address: ShippingAddress) => {
+    saveAddressToCookies(address);
+    dispatch({
+      type: "[Cart]- Update shipping address from cookies",
+      payload: address,
+    });
+  };
 
   useEffect(() => {
     const numberOfItems = state.cart.reduce(
@@ -66,7 +96,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     dispatch({
       type: "[Cart]- Update order summary",
       payload: orderSummary,
-    })
+    });
   }, [state.cart]);
 
   const addToCart = (product: ICartProduct) => {
@@ -119,6 +149,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         addToCart,
         updateCartQuantity,
         removeCartProduct: removeProductFromCart,
+        updateAddress,
       }}
     >
       {children}

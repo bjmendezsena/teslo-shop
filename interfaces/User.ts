@@ -4,5 +4,18 @@ export interface IUser extends IBaseInterface {
   name: string;
   email: string;
   password?: string;
-  role: "admin" | "client";
+  role: Role;
+}
+
+export type Role = "admin" | "client";
+
+export interface ShippingAddress {
+  firstName: string;
+  lastName: string;
+  address: string;
+  address2?: string;
+  zip: string;
+  city: string;
+  country: string;
+  phone: string;
 }

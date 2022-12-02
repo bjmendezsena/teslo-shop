@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { Button, Grid, Typography, Link, Chip } from "@mui/material";
 import { ErrorOutline } from "@mui/icons-material";
 import { AuthLayout } from "../../components/layouts";
 import { TSForm, TSTextField } from "../../components/ui";
 import { isEmail } from "../../utils";
-import { tesloApi } from "../../api";
+import { AuthContext } from "../../context";
 
 interface FormData {
   email: string;
@@ -13,23 +14,24 @@ interface FormData {
 }
 
 const LoginPage = () => {
+  const router = useRouter();
+  const { login } = useContext(AuthContext);
   const [formStatus, setFormStatus] = useState<"LOADING" | "NONE">("NONE");
   const [showError, setShowError] = useState(false);
 
   const onSubmit = async ({ email, password }: FormData) => {
-    console.log({ email, password });
     setFormStatus("LOADING");
     setShowError(false);
-    try {
-      const { data } = await tesloApi.post("/user/login", { email, password });
-      const { token, user } = data;
-      console.log({ token, user });
-    } catch (error) {
-      console.log(error);
+    const isValidLogin = await login({ email, password });
+    if (!isValidLogin) {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
+      setFormStatus("NONE");
+      return;
     }
     setFormStatus("NONE");
+    const destination = router.query.p?.toString() || "/";
+    router.replace(destination);
   };
 
   const disabled = formStatus === "LOADING";
@@ -113,7 +115,14 @@ const LoginPage = () => {
             </Button>
           </Grid>
           <Grid item xs={12} display='flex' justifyContent='end'>
-            <NextLink href='/auth/register' passHref>
+            <NextLink
+              href={
+                router.query.p
+                  ? `/auth/register?p=${router.query.p}`
+                  : "/auth/register"
+              }
+              passHref
+            >
               <Link underline='always'>¿No tienes cuenta?</Link>
             </NextLink>
           </Grid>

@@ -3,7 +3,7 @@ import { db } from "../../../database";
 import { User } from "../../../models";
 import bcrypt from "bcryptjs";
 import { signToken } from "../../../utils";
-import { isValidEmail } from '../../../utils/validations';
+import { isValidEmail } from "../../../utils/validations";
 
 type Data =
   | {
@@ -37,15 +37,15 @@ const registerUser = async (
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) => {
+  console.log(req.body);
   const { email = "", password = "", name = "" } = req.body;
-
+  console.log({password});
   if (password.length < 6) {
     await db.disconnect();
     return res.status(400).json({
       message: "La contraseña debe de ser de al menos 6 caracteres",
     });
   }
-
   if (name.length < 3) {
     await db.disconnect();
     return res.status(400).json({
@@ -64,8 +64,8 @@ const registerUser = async (
     });
   }
 
-  
-  if(!isValidEmail(email)){
+  if (!isValidEmail(email)) {
+    console.log("email", email);
     await db.disconnect();
     return res.status(400).json({
       message: "El correo no parece ser válido",
@@ -94,7 +94,6 @@ const registerUser = async (
   await db.disconnect();
 
   const { role, _id } = newUser;
-
 
   return res.status(200).json({
     token: signToken(_id, email),

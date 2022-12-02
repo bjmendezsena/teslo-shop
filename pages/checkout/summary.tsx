@@ -9,10 +9,17 @@ import {
   Link,
 } from "@mui/material";
 import React from "react";
+import { countries } from "../../utils";
 import { CartList, OrderSummary } from "../../components/cart";
 import { ShopLayout } from "../../components/layouts";
 import NextLink from "next/link";
+import { useCartContext } from "../../context";
 const SummaryPage = () => {
+  const { shippingAddress, numberOfItems } = useCartContext();
+
+  const { address, city, country, firstName, lastName, phone, zip, address2 } =
+    shippingAddress || {};
+
   return (
     <ShopLayout title='Resumen de orden' pageDescription='Resumen de la orden'>
       <Typography variant='h1' component='h1'>
@@ -26,7 +33,8 @@ const SummaryPage = () => {
           <Card className='summary-card'>
             <CardContent>
               <Typography variant='h2' component='h2'>
-                Resumen (3 productos)
+                Resumen ({numberOfItems}{" "}
+                {numberOfItems === 1 ? "producto" : "productos"})
               </Typography>
               <Divider sx={{ my8: 1 }} />
               <Box display='flex' justifyContent='space-between'>
@@ -40,11 +48,16 @@ const SummaryPage = () => {
                 </Box>
               </Box>
 
-              <Typography>Lewis Mendez</Typography>
-              <Typography>Pl. Blocs la florida, 17F, 1-1</Typography>
-              <Typography>Barcelona, 08905</Typography>
-              <Typography>España</Typography>
-              <Typography>+34 675927020</Typography>
+              <Typography>{firstName + " " + lastName}</Typography>
+              <Typography>{address}</Typography>
+              {address2 && <Typography>{address2}</Typography>}
+              <Typography>{phone}</Typography>
+              <Typography>
+                {city}, {zip}
+              </Typography>
+              <Typography>
+                {countries.find((c) => c.code === country)?.name}
+              </Typography>
               <Divider sx={{ my8: 1 }} />
               <Box display='flex' justifyContent='end'>
                 <NextLink href='/cart' passHref>

@@ -1,23 +1,49 @@
+import { useContext, useState, useEffect } from "react";
 import NextLink from "next/link";
-import { Button, Grid, TextField, Typography, Link } from "@mui/material";
+import { Button, Grid, Typography, Link, Chip } from "@mui/material";
+import { ErrorOutline } from "@mui/icons-material";
 import { AuthLayout } from "../../components/layouts";
 import { TSForm, TSTextField } from "../../components/ui";
+import { isEmail } from "../../utils";
+import { useForm } from "react-hook-form";
+import { AuthContext } from "../../context";
+import { useRouter } from "next/router";
 
 interface FormData {
   email: string;
   password: string;
   password2: string;
-  completeName: string;
+  name: string;
 }
 
 const RegisterPage = () => {
-  const onSubmit = async (data: FormData) => {
-    console.log(data);
+  const router = useRouter();
+  const { registerUser } = useContext(AuthContext);
+  const methods = useForm<FormData>({
+    mode: "onChange",
+  });
+  const [registerError, setRegisterError] = useState<string | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+    setRegisterError(null);
+    const { hasError, message } = await registerUser(formData);
+    if (hasError) {
+      setRegisterError(message!);
+      setTimeout(() => setRegisterError(null), 3000);
+      return setIsLoading(false);
+    }
+    setIsLoading(false);
+    const destination = router.query.p?.toString() || "/";
+    router.replace(destination);
   };
+
   return (
     <AuthLayout title='Registro'>
       <TSForm<FormData>
-        form={{ mode: "onChange" }}
+        methods={methods}
         onSubmit={onSubmit}
         noValidate
         display='flex'
@@ -39,24 +65,46 @@ const RegisterPage = () => {
             <Typography variant='h1' component='h1'>
               Crear cuenta
             </Typography>
+            <Chip
+              label={registerError}
+              color='error'
+              icon={<ErrorOutline />}
+              className='fadeIn'
+              sx={{
+                display: registerError ? "flex" : "none",
+                justifyContent: "center",
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <TSTextField
-              name='completeName'
+              name='name'
               label='Nombre completo'
               variant='filled'
               fullWidth
+              disabled={isLoading}
               options={{
                 required: "Debes ingresar un nombre completo",
                 minLength: {
                   value: 3,
-                  message: "La contraseña debe tener al menos 6 caracteres",
+                  message: "El nombre debe tener al menos 3 carácteres",
                 },
               }}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField label='Correo' variant='filled' fullWidth />
+            <TSTextField
+              label='Correo'
+              variant='filled'
+              type='email'
+              name='email'
+              disabled={isLoading}
+              fullWidth
+              options={{
+                required: "Este campo es requerido",
+                validate: isEmail,
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <TSTextField
@@ -64,6 +112,7 @@ const RegisterPage = () => {
               type='password'
               name='password'
               variant='filled'
+              disabled={isLoading}
               fullWidth
               options={{
                 required: "Este campo es requerido",
@@ -80,9 +129,15 @@ const RegisterPage = () => {
               type='password'
               name='password2'
               variant='filled'
+              disabled={isLoading}
               fullWidth
               options={{
                 required: "Este campo es requerido",
+                validate: (value) => {
+                  if (value !== methods.watch("password")) {
+                    return "Las contraseñas no coinciden";
+                  }
+                },
               }}
             />
           </Grid>
@@ -94,12 +149,23 @@ const RegisterPage = () => {
               className='circular-btn'
               size='large'
               type='submit'
+              disabled={isLoading || !methods.formState.isValid}
+              sx={{
+                ":disabled": {
+                  color: "white",
+                },
+              }}
             >
               Registrarse
             </Button>
           </Grid>
           <Grid item xs={12} display='flex' justifyContent='end'>
-            <NextLink href='/auth/login' passHref>
+            <NextLink
+              href={
+                router.query.p ? `/auth/login?p=${router.query.p}` : "/auth/login"
+              }
+              passHref
+            >
               <Link underline='always'>Ya tienes tienes cuenta?</Link>
             </NextLink>
           </Grid>

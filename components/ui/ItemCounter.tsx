@@ -12,6 +12,8 @@ export const ItemCounter: FC<Props> = ({
   maxValue,
   onUpdateQuantity,
 }) => {
+
+  
   const addOrRemove = (value: number) => {
     if (value === -1) {
       if (currentValue === 1) return;
