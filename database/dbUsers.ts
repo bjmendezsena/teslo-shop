@@ -27,8 +27,6 @@ export const checkUserEmailPassword = async (
 export const oAuthToDbUser = async (oAuthEmail: string, oAuthName: string) => {
   await db.connect();
 
-  console.log({ oAuthEmail });
-
   const user = await User.findOne({ email: oAuthEmail });
   await db.disconnect();
 

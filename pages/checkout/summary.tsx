@@ -1,3 +1,5 @@
+import React from "react";
+import { useRouter } from "next/router";
 import {
   Grid,
   Card,
@@ -8,14 +10,22 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import React from "react";
+import Cookies from "js-cookie";
 import { countries } from "../../utils";
 import { CartList, OrderSummary } from "../../components/cart";
 import { ShopLayout } from "../../components/layouts";
 import NextLink from "next/link";
 import { useCartContext } from "../../context";
+
 const SummaryPage = () => {
+  const router = useRouter();
   const { shippingAddress, numberOfItems } = useCartContext();
+
+  React.useEffect(() => {
+    if (!Cookies.get("firstName")) {
+      router.push("/checkout/address");
+    }
+  }, []);
 
   const { address, city, country, firstName, lastName, phone, zip, address2 } =
     shippingAddress || {};

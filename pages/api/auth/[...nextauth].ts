@@ -5,7 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { dbUsers } from "../../../database";
 import { IUser } from "../../../interfaces";
 
-export const authOptions = {
+export default NextAuth({
   // Configure one or more authentication providers
   providers: [
     Credentials({
@@ -38,6 +38,15 @@ export const authOptions = {
       clientSecret: process.env.GITHUB_SECRET || "",
     }),
   ],
+  pages: {
+    signIn: "/auth/login",
+    newUser: "/auth/register",
+  },
+  session:{
+    maxAge: 60 * 60 * 24 * 30, // 30 días
+    strategy: "jwt",
+    updateAge: 24 * 60 * 60, // Cada día
+  },
   // Callbacks
   callbacks: {
     async jwt({ token, account, user }: any) {
@@ -63,6 +72,4 @@ export const authOptions = {
       return session;
     },
   },
-};
-
-export default NextAuth(authOptions);
+});

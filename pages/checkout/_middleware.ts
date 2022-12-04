@@ -1,25 +1,19 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-import * as jose from "jose";
+import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest, ev: NextFetchEvent) {
-  const { token } = req.cookies;
+  const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  let isValidToken = false;
+  console.log({ session });
 
-  try {
-    // await jose.jwtVerify(
-    //   token || "",
-    //   new TextEncoder().encode(process.env.JWT_SECRET)
-    // );
-    isValidToken = true;
-    return NextResponse.next();
-  } catch (error) {
-    console.error(`JWT Invalid or not signed in`, { error });
-    isValidToken = false;
+  if (!session) {
+    
+    const requestedPage = req.page.name || "";
+    const url = req.nextUrl.clone();
+    url.pathname = "/auth/login";
+    url.search = `?p=${requestedPage}`;
+    return NextResponse.redirect(url);
   }
 
-  // if (!isValidToken) {
-  //   const { pathname } = req.nextUrl;
-  //   return NextResponse.redirect(new URL(`/auth/login?p=${pathname}`, req.url));
-  // }
+  return NextResponse.next();
 }

@@ -1,4 +1,6 @@
 import { useContext, useState, useEffect } from "react";
+import {GetServerSideProps} from "next";
+import { signIn, getSession } from "next-auth/react";
 import NextLink from "next/link";
 import { Button, Grid, Typography, Link, Chip } from "@mui/material";
 import { ErrorOutline } from "@mui/icons-material";
@@ -35,9 +37,13 @@ const RegisterPage = () => {
       setTimeout(() => setRegisterError(null), 3000);
       return setIsLoading(false);
     }
+    // const destination = router.query.p?.toString() || "/";
+    // router.replace(destination);
+    await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+    });
     setIsLoading(false);
-    const destination = router.query.p?.toString() || "/";
-    router.replace(destination);
   };
 
   return (
@@ -162,7 +168,9 @@ const RegisterPage = () => {
           <Grid item xs={12} display='flex' justifyContent='end'>
             <NextLink
               href={
-                router.query.p ? `/auth/login?p=${router.query.p}` : "/auth/login"
+                router.query.p
+                  ? `/auth/login?p=${router.query.p}`
+                  : "/auth/login"
               }
               passHref
             >
@@ -174,5 +182,27 @@ const RegisterPage = () => {
     </AuthLayout>
   );
 };
+
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { req, query } = context;
+  const session = await getSession({ req });
+
+  const {p = '/'} = query;
+  
+  if (session) {
+    return {
+      redirect: {
+        destination: p.toString(),
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: {},
+  };
+}
+
 
 export default RegisterPage;
