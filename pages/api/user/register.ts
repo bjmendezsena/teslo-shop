@@ -37,9 +37,9 @@ const registerUser = async (
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) => {
-  console.log(req.body);
+  
   const { email = "", password = "", name = "" } = req.body;
-  console.log({password});
+  
   if (password.length < 6) {
     await db.disconnect();
     return res.status(400).json({
@@ -65,7 +65,6 @@ const registerUser = async (
   }
 
   if (!isValidEmail(email)) {
-    console.log("email", email);
     await db.disconnect();
     return res.status(400).json({
       message: "El correo no parece ser válido",

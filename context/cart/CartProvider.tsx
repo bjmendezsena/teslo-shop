@@ -1,5 +1,6 @@
 import { useReducer, PropsWithChildren, useEffect } from "react";
 import Cookie from "js-cookie";
+import axios from "axios";
 import { ICartProduct, ShippingAddress } from "../../interfaces";
 import { CartContext, cartReducer } from "./";
 import {
@@ -7,6 +8,8 @@ import {
   getAddressFromCookies,
   saveAddressToCookies,
 } from "../../helpers";
+import { tesloApi } from "../../api";
+import { IOrder } from "../../interfaces/Order";
 
 const CART_COOKIE_KEY = "cart";
 
@@ -142,6 +145,52 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     });
   };
 
+  const createOrder = async (): Promise<{
+    hasError: boolean;
+    message: string;
+  }> => {
+    if (!state.shippingAddress) {
+      throw new Error("No hay dirección de entrega");
+    }
+
+    const body: IOrder = {
+      orderItems: state.cart.map((product) => ({
+        ...product,
+        size: product.size!,
+      })),
+      shippingAddress: state.shippingAddress,
+      numberOfItems: state.numberOfItems,
+      subTotal: state.subTotal,
+      tax: state.tax,
+      total: state.total,
+      isPaid: false,
+    };
+
+    try {
+      const { data } = await tesloApi.post("/orders", body);
+      
+      dispatch({
+        type: "[Cart]- Order complete",
+      });
+
+      return { hasError: false, message: data._id! };
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const { message } = (error.response?.data || {
+          message: "Error desconocido",
+        }) as { message: string };
+        return {
+          hasError: true,
+          message,
+        };
+      }
+      return {
+        hasError: true,
+        message: "Error no controlado, hable con el administrador",
+      };
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -150,6 +199,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         updateCartQuantity,
         removeCartProduct: removeProductFromCart,
         updateAddress,
+        createOrder,
       }}
     >
       {children}
