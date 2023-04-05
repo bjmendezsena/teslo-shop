@@ -30,7 +30,9 @@ const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const session: any = await getSession({ req });
 
   if (!session) {
-    return res.status(401).json({ message: "No estás autorizado para ejecutar esta acción" });
+    return res
+      .status(401)
+      .json({ message: "No estás autorizado para ejecutar esta acción" });
   }
 
   await db.connect();
@@ -38,12 +40,14 @@ const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const productsIds = orderItems.map((item) => item._id);
 
   // verificar que los productos existan
-  const dbProducts = await Product.find({ _id: { $in: productsIds } });
+  const dbProducts = await Product.find({ _id: { $in: productsIds } }).lean();
 
   try {
     const subTotal = orderItems.reduce((prev, current) => {
-      const currentPrice = dbProducts.find((p) => p.id === current._id)?.price;
-      console.log({ currentPrice });
+      const currentPrice = dbProducts.find(
+        (p) => p._id.toString() === current._id
+      )?.price;
+
       if (!currentPrice) {
         throw new Error("Producto no encontrado");
       }

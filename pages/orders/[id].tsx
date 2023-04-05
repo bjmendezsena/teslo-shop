@@ -46,7 +46,7 @@ const OrderPage: NextPage<OrderPageProps> = ({ order }) => {
           order.isPaid ? <CreditScoreOutlined /> : <CreditCardOffOutlined />
         }
       />
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className='fadeIn'>
         <Grid item xs={12} sm={7}>
           <CartList />
         </Grid>
@@ -95,7 +95,7 @@ const OrderPage: NextPage<OrderPageProps> = ({ order }) => {
                   total: order.total,
                 }}
               />
-              <Box sx={{ mt: 3 }}>
+              <Box sx={{ mt: 3 }} display='flex' flexDirection='column'>
                 {order.isPaid ? (
                   <Chip
                     sx={{
