@@ -84,10 +84,10 @@ export interface SellerReceivableBreakdown {
 
 export interface Shipping {
   name: ShippingName;
-  address: ShippingAddress;
+  address: PaypalShippingAddress;
 }
 
-export interface ShippingAddress {
+export interface PaypalShippingAddress {
   address_line_1: string;
   admin_area_2: string;
   admin_area_1: string;

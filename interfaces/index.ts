@@ -1,7 +1,9 @@
-export * from './NavbarInterfaces'
-export * from './products'
-export * from './cart'
-export * from './User'
-export * from './Order'
-export * from './requests'
-export * as IPaypal from './paypal'
+export * from './BaseInterface';
+export * from './NavbarInterfaces';
+export * from './Order';
+export * from './User';
+export * from './cart';
+export * from './dhasboard';
+export * from './paypal';
+export * from './products';
+export * from './requests';

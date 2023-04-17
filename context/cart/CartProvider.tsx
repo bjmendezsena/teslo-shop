@@ -1,7 +1,7 @@
 import { useReducer, PropsWithChildren, useEffect } from "react";
 import Cookie from "js-cookie";
 import axios from "axios";
-import { ICartProduct, ShippingAddress } from "../../interfaces";
+import { ICartProduct } from "../../interfaces";
 import { CartContext, cartReducer } from "./";
 import {
   summQuantityOfProductInCart,
@@ -9,7 +9,7 @@ import {
   saveAddressToCookies,
 } from "../../helpers";
 import { tesloApi } from "../../api";
-import { IOrder } from "../../interfaces/Order";
+import { IOrder, ShippingAddress } from "../../interfaces/Order";
 
 const CART_COOKIE_KEY = "cart";
 
@@ -168,7 +168,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
     try {
       const { data } = await tesloApi.post("/orders", body);
-      
+
       dispatch({
         type: "[Cart]- Order complete",
       });

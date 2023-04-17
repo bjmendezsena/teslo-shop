@@ -37,4 +37,4 @@ export const removeAddressFromCookies = () => {
   Cookies.remove("city");
   Cookies.remove("country");
   Cookies.remove("phone");
-}
+};

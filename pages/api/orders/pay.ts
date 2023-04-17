@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { IPaypal } from "../../../interfaces";
+import * as IPaypal from "../../../interfaces/paypal";
 import { db } from "../../../database";
 import { Order } from "../../../models";
 
@@ -55,8 +55,6 @@ const getPaypalBearerToken = async (): Promise<String | null> => {
 };
 
 const payOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-
-
   //TODO: Validar sesión del usuario
   //TODO: Validar mongoID
   const paypalBearerToken = await getPaypalBearerToken();
@@ -89,19 +87,17 @@ const payOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       return res.status(400).json({ message: "Order not exists" });
     }
 
-    if(dbOrder.isPaid){
+    if (dbOrder.isPaid) {
       await db.disconnect();
       return res.status(400).json({ message: "Order already paid" });
     }
 
     const amountValue = Number(data.purchase_units[0].amount.value);
 
-    if(dbOrder.total !== amountValue) {
+    if (dbOrder.total !== amountValue) {
       await db.disconnect();
       return res.status(400).json({ message: "Amounts not match" });
     }
-
-
 
     dbOrder.transaccionId = transactionId;
     dbOrder.isPaid = true;
@@ -112,7 +108,6 @@ const payOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     await db.disconnect();
 
     res.status(200).json({ message: "Order paid" });
-
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log(error.response?.data);
@@ -121,5 +116,4 @@ const payOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     }
     res.status(500).json({ message: "Error paying order" });
   }
-
 };
