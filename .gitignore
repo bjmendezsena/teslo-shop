@@ -10,6 +10,8 @@
 
 # MongoDB
 mongo/
+.env.development
+.env.production
 
 # next.js
 /.next/
