@@ -6,6 +6,7 @@ const productSchema = new Schema(
     description: {
       type: String,
       required: true,
+      default: "",
     },
     images: [
       {
@@ -44,6 +45,7 @@ const productSchema = new Schema(
     title: {
       type: String,
       required: true,
+      default: "",
     },
     type: {
       type: String,
@@ -51,6 +53,7 @@ const productSchema = new Schema(
         values: ["shirts", "pants", "hoodies", "hats"],
         message: "{VALUE} no es un tipo valido",
       },
+      default: "shirts",
     },
     gender: {
       type: String,
@@ -58,6 +61,7 @@ const productSchema = new Schema(
         values: ["men", "women", "kid", "unisex"],
         message: "{VALUE} no es un género valido",
       },
+      default: "unisex",
     },
   },
   {

@@ -1,10 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  GetStaticProps,
-  NextPage,
-  GetServerSideProps,
-  GetStaticPaths,
-} from "next";
+import { GetStaticProps, NextPage, GetStaticPaths } from "next";
 import { Box, Button, Grid, Typography, Chip } from "@mui/material";
 import { useRouter } from "next/router";
 

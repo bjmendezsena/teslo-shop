@@ -31,11 +31,19 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
   await db.connect();
   const products = await Product.find(condition)
-    // * Solo mostrar los campos que quiero
-    // * El signo menos es para que no muestre el campo id
     .select("title images price inStock slug -_id")
     .sort({ createdAt: "ascending" });
   await db.disconnect();
 
-  res.status(200).json(products);
+  const updatedProduct = products.map((product) => {
+    product.images = product.images.map((image) => {
+      return image.includes("http")
+        ? image
+        : `${process.env.HOST_NAME}/products/${image}`;
+    });
+
+    return product;
+  });
+
+  res.status(200).json(updatedProduct);
 };
